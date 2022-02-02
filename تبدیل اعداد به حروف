@@ -1,0 +1,36 @@
+#include <iostream>
+#include <string>
+using namespace std;
+int main()
+{
+ long long int x,p;
+ cout<<"How Many Number:\n";
+ cin>>x;
+ cout<<"Plaese Inter Your Number:\n";
+ cin>>p;
+ int w[x];
+ string m[x];
+ for(int y=0;y<x;y++)
+ {
+    w[y]=p%10;
+    p=p/10;
+    switch(w[y])
+    {
+        case 1:m[y]=" - one"; break;
+        case 2:m[y]=" - two";break;
+        case 3:m[y]=" - three";break;
+        case 4:m[y]=" - four";break;
+        case 5:m[y]=" - five";break;
+        case 6:m[y]=" - six";break;
+        case 7:m[y]=" - seven";break;
+        case 8:m[y]=" - eight";break;
+        case 9:m[y]=" - nine";break;
+        case 0:m[y]=" - ziro";break;
+    }
+
+ }
+ for(int o=x;o>0;o--)
+ {
+     cout<<m[o-1];
+ }
+}
