@@ -1,0 +1,291 @@
+#include "stdafx.h"
+#include "GAQueen.h"
+//sourcea.ir
+#ifdef _DEBUG
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#define new DEBUG_NEW
+#endif
+
+CGAQueen::CGAQueen(int nPopulation,int nIteration,float Mutation,int iChBoard)
+{
+	Clear();
+	srand( (unsigned)time( NULL ) );
+	Population=nPopulation;
+	Iteration=nIteration;
+	MutationRate=Mutation;
+	ChessBoradLenght=iChBoard;
+
+}
+
+CGAQueen::~CGAQueen()
+{
+
+}
+
+int CGAQueen::CostFunc(int index)
+{
+	int costValue=0;
+	int m,n;
+	int i,j;
+
+	for(i=0;i<ChessBoradLenght;i++)
+	{
+		j=ChromosomeMatrix[i][index];
+
+		m=i+1;
+		n=j-1;
+		while(m<ChessBoradLenght	&& n>=0)
+		{
+			if(area[m][n]==1)
+			{
+				costValue++;
+			}
+			m++;
+			n--;
+		}
+
+		m=i+1;
+		n=j+1;
+		while(m<ChessBoradLenght && n<ChessBoradLenght )
+		{
+			if(area[m][n]==1)
+			{
+
+				costValue++;
+			}
+			m++;
+			n++;
+		}
+
+
+
+		m=i-1;
+		n=j-1;
+		while(m>=0 && n>=0)
+		{
+			if(area[m][n]==1)
+			{
+
+				costValue++;
+			}
+			m--;
+			n--;
+		}
+
+
+		m=i-1;
+		n=j+1;
+		while(m>=0 && n<ChessBoradLenght)
+		{
+			if(area[m][n]==1)
+			{
+
+				costValue++;
+			}
+			m--;
+			n++;
+		}
+	}
+
+	return costValue;
+
+}
+
+void CGAQueen::Clear()
+{
+	// to Reset All cells
+	for (int i=0;i<ChessBoradLenght;i++)
+		for (int j=0;j<ChessBoradLenght;j++)
+			area[i][j]=0;
+}
+
+void CGAQueen::InitialPopulation()
+{
+
+	int random;
+	bool bCheck;
+	for (int index=0;index<=Population-1;index++)
+		for (int a=0;a<ChessBoradLenght;a++)
+			{
+				random=rand();
+
+				bCheck=1;
+				for (int b=0;b<a;b++)
+					if (random%ChessBoradLenght==ChromosomeMatrix[b][index])
+						bCheck=0;
+				if (bCheck)
+					ChromosomeMatrix[a][index]=random%ChessBoradLenght;
+				else
+					a--;
+			}
+
+}
+void CGAQueen::PopulationSort()
+{
+	bool k=1;
+	int Temp;
+	while(k)
+	{
+		k=0;
+		for (int i=0;i<=Population-2;i++)
+		{
+			if (CostMatrix[i]>CostMatrix[i+1])
+			{
+				Temp=CostMatrix[i];
+				CostMatrix[i]=CostMatrix[i+1];
+				CostMatrix[i+1]=Temp;
+
+			for (int j=0;j<ChessBoradLenght;j++)
+			{
+				Temp=ChromosomeMatrix[j][i];
+				ChromosomeMatrix[j][i]=ChromosomeMatrix[j][i+1];
+				ChromosomeMatrix[j][i+1]=Temp;
+			}
+			k=1;
+			}
+		}
+	}
+}
+void CGAQueen::Mating()
+{
+	int TempMatrix[30][2];
+	int TempMatrix0[30],TempMatrix1[30];
+	int Temp,j,k;
+
+	for (int index=0;index<=(Population/4)-1;index++)
+		for (int t=0;t<=1;t++)
+		{
+
+			for(int i=0;i<ChessBoradLenght;i++)
+			{
+				TempMatrix0[i]=ChromosomeMatrix[i][2*index];
+				TempMatrix1[i]=ChromosomeMatrix[i][2*index+1];
+			}
+			for (i=0;i<ChessBoradLenght;i++)
+				if(CrossOverMatrix[i][2*index+t]==0)
+				{
+					for (j=0;j<ChessBoradLenght;j++)
+						if(TempMatrix0[j]!=100)
+						{
+							TempMatrix[i][t]=TempMatrix0[j];
+							Temp=TempMatrix0[j];
+							TempMatrix0[j]=100;
+							j=ChessBoradLenght-1;
+
+							for (k=0;k<ChessBoradLenght;k++)
+							{
+								if (TempMatrix1[k]==Temp)
+								{
+									TempMatrix1[k]=100;
+									k=ChessBoradLenght-1;
+								}
+							}
+						}
+				}
+				else
+				{
+					for (j=0;j<ChessBoradLenght;j++)
+						if(TempMatrix1[j]!=100)
+						{
+							TempMatrix[i][t]=TempMatrix1[j];
+							Temp=TempMatrix1[j];
+							TempMatrix1[j]=100;
+							j=ChessBoradLenght-1;
+
+							for (k=0;k<ChessBoradLenght;k++)
+							{
+								if (TempMatrix0[k]==Temp)
+								{
+									TempMatrix0[k]=100;
+									k=ChessBoradLenght-1;
+								}
+							}
+						}
+				}
+
+		for(i=0;i<ChessBoradLenght;i++)
+			ChromosomeMatrix[i][2*index+Population/2+t]=TempMatrix[i][t];
+
+		}
+
+
+}
+void CGAQueen::GenerateCrossOverMatrix()
+{
+	int randomCrossOver;
+	for (int index=0;index<=Population-1;index++)
+		for (int a=0;a<ChessBoradLenght;a++)
+		{
+			randomCrossOver=rand();
+			CrossOverMatrix[a][index]=randomCrossOver%2;
+		}
+
+}
+void CGAQueen::ApplyMutation()
+{
+	int randomChromosome;
+	int randomGen0,randomGen1;
+	int Temp;
+	int NumberOfMutation=int(MutationRate*(Population-1)*ChessBoradLenght);
+
+	for(int k=0;k<=NumberOfMutation;k++)
+	{
+		randomChromosome=0;
+		while((randomChromosome=rand()%Population)==0);
+
+		randomGen0=rand()%ChessBoradLenght;
+		while((randomGen1=rand()%ChessBoradLenght)==randomGen0);
+
+		// Apply Mutation
+		Temp=ChromosomeMatrix[randomGen0][randomChromosome];
+		ChromosomeMatrix[randomGen0][randomChromosome]=ChromosomeMatrix[randomGen1][randomChromosome];
+		ChromosomeMatrix[randomGen0][randomChromosome]=Temp;
+	}
+
+}
+void CGAQueen::FillArea(int index)
+{
+	Clear();
+	for (int i=0;i<ChessBoradLenght;i++)
+		area[i][ChromosomeMatrix[i][index]]=1;
+}
+#if !defined(AFX_GAQUEEN_H__C26AE0A3_F9B4_426F_A324_B460CC7946CB__INCLUDED_)
+#define AFX_GAQUEEN_H__C26AE0A3_F9B4_426F_A324_B460CC7946CB__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif
+
+
+class CGAQueen
+{
+public:
+	CGAQueen(int nPopulation,int nIteration,float Mutation,int mChBoard);
+	virtual ~CGAQueen();
+	void Clear();// to clear chess board with 0 value
+	void InitialPopulation();// to create the first and initial randompopulation
+	void FillArea(int index);// to fill chess board with desired chromosome
+	int CostFunc(int index);// determine the cost of matrix[index][index]
+	void PopulationSort();// to sort population from the best to the worst
+	void GenerateCrossOverMatrix();// a way to create children from parent is CcrossOver
+	void Mating();// to create children from parents
+	void ApplyMutation();// to apply mating to sorted population from the second chromosome to last
+
+	int ChromosomeMatrix[30][1000];// Answer ( chromosome ) Matrix
+	int CostMatrix[1000];// to keep cost va;ue for each chromosome
+	int CrossOverMatrix[30][1000];// to keep cross over matrix for relative parents
+	int Population;
+	int Iteration;
+	float MutationRate ;
+	int ChessBoradLenght;
+
+
+private:
+	int area[30][30];// This is the chess board matrix
+
+
+
+};
+
+#endif // !defined(AFX_GAQUEEN_H__C26AE0A3_F9B4_426F_A324_B460CC7946CB__INCLUDED_)
