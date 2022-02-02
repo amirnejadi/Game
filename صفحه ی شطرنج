@@ -1,0 +1,78 @@
+#include <iostream>
+#include<windows.h>
+#include<gl\glut.h>
+using namespace std;
+//sourcea.ir
+int color = 0;
+GLint width = 800;
+GLint hight = 600;
+
+void init()
+{
+
+    glClearColor(0, 1, 1, 0);
+
+    glMatrixMode(GL_PROJECTION);
+
+    gluOrtho2D(0, width, 0, hight);
+}
+
+void drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4)
+{
+
+    if (color == 0)
+    {
+        glColor3f(1, 1, 1);
+        color = 1;
+    }
+
+    else
+    {
+        glColor3f(0, 0, 0);
+        color = 0;
+    }
+
+
+    glBegin(GL_POLYGON);
+    glVertex2i(x1, y1);
+    glVertex2i(x2, y2);
+    glVertex2i(x3, y3);
+    glVertex2i(x4, y4);
+    glEnd();
+}
+void chessboard()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    GLint x, y;
+    GLint squareWidthInPixel = 100;
+    GLint squareHightInPixel = 75;
+    for (x = 0; x <= width; x += squareWidthInPixel)
+    {
+        for (y = 0; y <= hight; y += squareHightInPixel)
+        {
+            drawSquare(x, y + squareHightInPixel, x + squareWidthInPixel, y + squareHightInPixel, x + squareWidthInPixel, y, x, y);
+        }
+    }
+
+    glFlush();
+}
+
+int main(int agrc, char ** argv)
+{
+
+    glutInit(&agrc, argv);
+
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+
+    glutInitWindowPosition(100, 100);
+
+    glutInitWindowSize(800, 600);
+
+    glutCreateWindow("Chess Board using 'OpenGL' in C++");
+
+    init();
+
+    glutDisplayFunc(chessboard);
+
+    glutMainLoop();
+}
