@@ -1,0 +1,47 @@
+#include<iostream.h>
+#include<conio.h>
+#include<graphics.h>
+
+
+void main()
+{
+	int k,d=DETECT;
+	initgraph(&d,&k,"c:\\tc\\bgi");
+	cleardevice();
+
+	int n,m,a;
+
+	cout<<"\nEnter number of columns: ";
+	cin>>n;
+	cout<<"\nEnter number of rows: ";
+	cin>>m;
+	cout<<"\nEnter width: ";
+	cin>>a;
+	cleardevice();
+
+	rectangle(0,0,a*n,a*m);
+
+	int i,c=a;
+
+	// Soton
+	for(i=1;i<n;i++)
+	{
+		line(c,0,c,m*a);
+		c=c+a;
+	}
+
+	//Satr
+	c=a;
+	for(i=1;i<m;i++)
+	{
+		line(0,c,n*a,c);
+		c=c+a;
+	}
+
+	getch();
+	cleardevice();
+	cout<<" SAMAVi ";
+
+
+closegraph();
+}
